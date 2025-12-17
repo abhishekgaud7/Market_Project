@@ -7,12 +7,23 @@ import ProductCard from './ProductCard';
 import Button from '../ui/Button';
 
 const ProductsPage = () => {
-    // Enhanced mock data to verify features immediately
-    const [products, setProducts] = useState([
-        { id: 1, name: 'CakeZone Walnut Brownie', type: 'Food', stock: 200, mrp: 2000, sellingPrice: 2000, brand: 'CakeZone', returnEligible: 'Yes', isPublished: true },
-        { id: 2, name: 'CakeZone Choco Fudge', type: 'Food', stock: 200, mrp: 23, sellingPrice: 80, brand: 'CakeZone', returnEligible: 'Yes', isPublished: true },
-        { id: 3, name: 'Theobroma Christmas Cake', type: 'Food', stock: 200, mrp: 23, sellingPrice: 80, brand: 'CakeZone', returnEligible: 'Yes', isPublished: true }
-    ]);
+    // Initialize from LocalStorage or use default mock data
+    const [products, setProducts] = useState(() => {
+        const savedProducts = localStorage.getItem('products');
+        if (savedProducts) {
+            return JSON.parse(savedProducts);
+        }
+        return [
+            { id: 1, name: 'CakeZone Walnut Brownie', type: 'Food', stock: 200, mrp: 2000, sellingPrice: 2000, brand: 'CakeZone', returnEligible: 'Yes', isPublished: true },
+            { id: 2, name: 'CakeZone Choco Fudge Brownie', type: 'Food', stock: 200, mrp: 23, sellingPrice: 80, brand: 'CakeZone', returnEligible: 'Yes', isPublished: true },
+            { id: 3, name: 'Theobroma Christmas Cake', type: 'Food', stock: 200, mrp: 23, sellingPrice: 80, brand: 'CakeZone', returnEligible: 'Yes', isPublished: true }
+        ];
+    });
+
+    // Save to LocalStorage whenever products change
+    React.useEffect(() => {
+        localStorage.setItem('products', JSON.stringify(products));
+    }, [products]);
 
     const [activeTab, setActiveTab] = useState('Published');
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -21,12 +32,9 @@ const ProductsPage = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
 
-    // Filter products based on tab
     const displayedProducts = products.filter(p =>
         activeTab === 'Published' ? p.isPublished : !p.isPublished
     );
-
-    // --- Handlers ---
 
     const handleOpenAdd = () => {
         setEditingProduct(null);
@@ -40,16 +48,14 @@ const ProductsPage = () => {
 
     const handleSaveProduct = (productData) => {
         if (editingProduct) {
-            // Update existing
             setProducts(prev => prev.map(p =>
                 p.id === editingProduct.id ? { ...p, ...productData } : p
             ));
         } else {
-            // Create new
             setProducts(prev => [...prev, {
                 ...productData,
                 id: Date.now(),
-                isPublished: activeTab === 'Published' // Auto-publish if created in Published tab? Or default to false? Let's assume default false usually, but here we'll match tab for convenience
+                isPublished: activeTab === 'Published'
             }]);
         }
     };
@@ -74,7 +80,6 @@ const ProductsPage = () => {
     };
 
 
-    // Styles
     const tabsContainerStyle = {
         display: 'flex',
         gap: '24px',
@@ -91,11 +96,24 @@ const ProductsPage = () => {
         transition: 'all 0.2s'
     });
 
-    const headerActionsStyle = { // Header area inside page content
+    const headerActionsStyle = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '24px'
+    };
+
+    // Style specifically for the "+ Add Products" link shown in the screenshot
+    const addProductLinkStyle = {
+        fontSize: '16px',
+        color: '#444',
+        cursor: 'pointer',
+        fontWeight: '500',
+        background: 'none',
+        border: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px'
     };
 
     const contentStyle = {
@@ -105,7 +123,7 @@ const ProductsPage = () => {
         backgroundColor: '#fff',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-        padding: displayedProducts.length > 0 ? '24px' : '0' // Padding only when grid is visible
+        padding: displayedProducts.length > 0 ? '24px' : '0'
     };
 
     const gridStyle = {
@@ -119,10 +137,12 @@ const ProductsPage = () => {
     return (
         <DashboardLayout>
             <div style={headerActionsStyle}>
-                <h2 style={{ fontSize: '24px' }}>Products</h2>
-                <div style={{ width: '160px' }}>
-                    <Button onClick={handleOpenAdd}>+ Add Products</Button>
-                </div>
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>Products</h2>
+                {hasContent && (
+                    <button onClick={handleOpenAdd} style={addProductLinkStyle}>
+                        <span style={{ fontSize: '20px' }}>+</span> Add Products
+                    </button>
+                )}
             </div>
 
             <div style={tabsContainerStyle}>
@@ -155,7 +175,6 @@ const ProductsPage = () => {
                 )}
             </div>
 
-            {/* Form Modal (Add / Edit) */}
             <AddProductModal
                 isOpen={isFormModalOpen}
                 onClose={() => setIsFormModalOpen(false)}
@@ -163,14 +182,12 @@ const ProductsPage = () => {
                 initialData={editingProduct}
             />
 
-            {/* Delete Confirmation Modal */}
             <DeleteModal
                 isOpen={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={confirmDelete}
                 productName={productToDelete?.name}
             />
-
         </DashboardLayout>
     );
 };
