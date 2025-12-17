@@ -1,0 +1,49 @@
+:root {
+  /* Colors */
+  --primary-color: #0B105C; /* Navy Blue from button */
+  --text-dark: #1e1e1e;
+  --text-light: #ffffff;
+  --text-muted: #666666;
+  --bg-light: #f8f9fe; /* Light blueish gray background */
+  --border-color: #e0e0e0;
+  --error-color: #ff4d4d;
+  
+  /* Fonts */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 64px;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 24px; /* For the main card */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: #ffffff;
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
